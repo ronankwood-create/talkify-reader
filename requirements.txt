@@ -1,6 +1,9 @@
+# Exact versions tested on a fresh install (Windows 11, Python 3.12), pinned so
+# a future release of any of them cannot break setup.
+
 # core reader
-pymupdf            # PDF text + geometry
-lameenc            # pure-wheel MP3 encoder for export - no ffmpeg binary needed
+pymupdf==2.0            # PDF text + geometry
+lameenc==1.9.0          # pure-wheel MP3 encoder for export - no ffmpeg binary needed
 
 # offline speech (default engine): NOT installed here. Kokoro's English
 # phonetics need spaCy, which has no wheels for this project's Python version
@@ -8,8 +11,35 @@ lameenc            # pure-wheel MP3 encoder for export - no ffmpeg binary needed
 # and the Setup section of README.md.
 
 # optional
-edge-tts           # network engine; emits word boundaries directly
-ebooklib           # EPUB
-beautifulsoup4     # EPUB
-pytesseract        # scanned PDFs (also needs the Tesseract binary)
-pillow
+edge-tts==7.3.1         # network engine; emits word boundaries directly
+EbookLib==0.20          # EPUB
+beautifulsoup4==4.15.0  # EPUB
+pytesseract==0.3.13     # scanned PDFs (also needs the Tesseract binary)
+pillow==13.0.0
+
+# installed by the packages above, pinned to the tested versions
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.5
+aiosignal==1.4.0
+attrs==26.1.0
+certifi==2026.10.23
+flatbuffers==25.12.19
+frozenlist==1.8.0
+idna==3.20
+lxml==6.1.3
+multidict==7.2.1
+networkx==3.7
+numpy==2.5.4
+onnxruntime==1.31.1
+packaging==26.3
+propcache==0.5.4
+protobuf==7.36.2
+psutil==7.2.2
+pymupdf4llm==2.0
+pymupdf_layout==2.0
+PyYAML==6.0.3
+six==1.17.0
+soupsieve==3.0.4
+tabulate==0.10.0
+typing_extensions==4.16.0
+yarl==1.25.1
