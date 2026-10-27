@@ -31,6 +31,7 @@ samples/
 *.txt
 *.log
 !requirements.txt
+!requirements-kokoro.txt
 
 # model weights and voices (downloaded on first run, never committed)
 kokoro_assets/

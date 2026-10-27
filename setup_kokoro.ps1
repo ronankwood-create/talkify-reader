@@ -16,7 +16,8 @@ $venv = Join-Path $here "kokoro_venv"
 
 py -3.12 -m venv $venv
 & "$venv\Scripts\python.exe" -m pip install --upgrade pip
-& "$venv\Scripts\python.exe" -m pip install kokoro kokoro-onnx "misaki[en]" soundfile faster-whisper
+# Exact versions known to work together - see requirements-kokoro.txt.
+& "$venv\Scripts\python.exe" -m pip install -r (Join-Path $here "requirements-kokoro.txt")
 
 Write-Host "`nKokoro venv ready at $venv"
 Write-Host "Run:  python talkify.py --engine kokoro"

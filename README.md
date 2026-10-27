@@ -109,8 +109,10 @@ The script only creates a second virtual environment, `kokoro_venv`, and install
 
 ```powershell
 py -3.12 -m venv kokoro_venv
-kokoro_venv\Scripts\python -m pip install kokoro kokoro-onnx "misaki[en]" soundfile faster-whisper
+kokoro_venv\Scripts\python -m pip install -r requirements-kokoro.txt
 ```
+
+The versions in `requirements-kokoro.txt` are pinned on purpose. Installing the latest of everything currently breaks the voice engine at startup, because a newer PyAV release dropped an argument faster-whisper still uses.
 
 **4. Run it:**
 
