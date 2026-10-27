@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talkify - extraction triage</title>
+<link rel="stylesheet" href="/web/style.css">
+<style>
+  body { padding: 24px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.2rem; margin: 0 0 4px; }
+  .hint { color: var(--dim, #766); font-size: 0.85rem; margin: 0 0 16px; }
+  form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+  #pathInput { flex: 1 1 420px; }
+  #pagesInput { width: 160px; }
+  input[type=text] {
+    padding: 8px 10px; border: 1px solid var(--line, #ccc); border-radius: 6px;
+    background: var(--panel, #fff); color: var(--ink); font: inherit;
+  }
+  .legend { display: flex; gap: 16px; margin: 12px 0 20px; font-size: 0.85rem; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .err { color: #b3453a; font-size: 0.9rem; }
+  .page-block { margin-bottom: 32px; }
+  .page-block h3 { font-size: 0.85rem; font-weight: 600; color: var(--dim, #766); margin: 0 0 6px; }
+  .page-wrap { position: relative; display: inline-block; border: 1px solid var(--line, #ddd); }
+  .page-wrap img { display: block; max-width: 100%; height: auto; }
+  .box {
+    position: absolute; border: 1.5px solid; box-sizing: border-box; cursor: help;
+  }
+  .box.body { border-color: #2f6f4f; background: rgba(47,111,79,0.12); }
+  .box.furniture { border-color: #767676; background: rgba(118,118,118,0.18); }
+  .box.caption, .box.footnote { border-color: #b8960c; background: rgba(184,150,12,0.18); }
+  .box.junk, .box.rotated, .box.floating_label, .box.in_figure { border-color: #b3453a; background: rgba(179,69,58,0.18); }
+  .box:hover { z-index: 5; background: rgba(0,0,0,0.35); border-width: 2px; }
+  #tooltip {
+    position: fixed; max-width: 360px; padding: 8px 10px; border-radius: 6px;
+    background: #1c1b19; color: #f2efe9; font-size: 0.8rem; line-height: 1.4;
+    pointer-events: none; z-index: 20; box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  }
+  #tooltip[hidden] { display: none; }
+  #tooltip b { text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.7rem; }
+</style>
+</head>
+<body data-theme="default">
+
+<h1>Extraction triage</h1>
+<p class="hint">Not part of the reader - a debug view for scanned-PDF extraction. Shows
+  what actually reaches the reader (green), and why anything else was left out: a
+  running head or page number (gray), a dropped figure caption or footnote (yellow),
+  or OCR junk / rotated text / an isolated floating label / text sitting inside a
+  figure's own image (red). Keep the page range small -
+  a handful of pages - this runs synchronously and OCRs anything not already cached.</p>
+
+<form id="form">
+  <input id="pathInput" type="text" spellcheck="false"
+         placeholder="C:\Users\you\Downloads\book.pdf">
+  <input id="pagesInput" type="text" spellcheck="false"
+         placeholder="pages, e.g. 20-25 (blank = page 1 only)">
+  <button type="submit" class="primary">Load</button>
+</form>
+<p class="err" id="err" hidden></p>
+
+<div class="legend">
+  <span><i class="swatch" style="background:#2f6f4f"></i> kept (read aloud)</span>
+  <span><i class="swatch" style="background:#767676"></i> furniture (running head / page number)</span>
+  <span><i class="swatch" style="background:#b8960c"></i> caption / footnote (dropped by design)</span>
+  <span><i class="swatch" style="background:#b3453a"></i> junk / rotated / floating label / in figure</span>
+</div>
+
+<div id="results"></div>
+<div id="tooltip" hidden></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const tooltip = $("tooltip");
+
+function showTip(e, box) {
+  tooltip.innerHTML = `<b>${box.category}</b><br>${box.text.replace(/</g, "&lt;")}`;
+  tooltip.hidden = false;
+  moveTip(e);
+}
+function moveTip(e) {
+  tooltip.style.left = Math.min(e.clientX + 14, window.innerWidth - 380) + "px";
+  tooltip.style.top = Math.min(e.clientY + 14, window.innerHeight - 80) + "px";
+}
+function hideTip() { tooltip.hidden = true; }
+
+function renderPage(p) {
+  const wrap = document.createElement("div");
+  wrap.className = "page-block";
+  const h = document.createElement("h3");
+  h.textContent = `PDF page ${p.page + 1} (0-based index ${p.page})`;
+  wrap.appendChild(h);
+
+  const imgWrap = document.createElement("div");
+  imgWrap.className = "page-wrap";
+  imgWrap.style.width = p.width + "px";
+  imgWrap.style.height = p.height + "px";
+  const img = document.createElement("img");
+  img.src = `data:image/png;base64,${p.image_b64}`;
+  img.width = p.width;
+  img.height = p.height;
+  imgWrap.appendChild(img);
+
+  for (const box of p.lines) {
+    const el = document.createElement("div");
+    el.className = `box ${box.category}`;
+    el.style.left = box.x0 + "px";
+    el.style.top = box.y0 + "px";
+    el.style.width = Math.max(box.x1 - box.x0, 2) + "px";
+    el.style.height = Math.max(box.y1 - box.y0, 2) + "px";
+    el.addEventListener("mouseenter", (e) => showTip(e, box));
+    el.addEventListener("mousemove", moveTip);
+    el.addEventListener("mouseleave", hideTip);
+    imgWrap.appendChild(el);
+  }
+  wrap.appendChild(imgWrap);
+  return wrap;
+}
+
+$("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const path = $("pathInput").value.trim();
+  const pages = $("pagesInput").value.trim();
+  const err = $("err");
+  const results = $("results");
+  err.hidden = true;
+  results.textContent = "";
+  if (!path) return;
+
+  const params = new URLSearchParams({ path });
+  if (pages) params.set("pages", pages);
+
+  let r, j;
+  try {
+    r = await fetch(`/api/diagnose?${params}`);
+    j = await r.json();
+  } catch {
+    err.textContent = "lost the connection while reading that file";
+    err.hidden = false;
+    return;
+  }
+  if (!r.ok) {
+    err.textContent = j.error || "could not diagnose that file";
+    err.hidden = false;
+    return;
+  }
+  for (const p of j.pages) results.appendChild(renderPage(p));
+});
+</script>
+</body>
+</html>

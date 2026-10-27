@@ -1,0 +1,582 @@
+:root {
+  --bg: #fbfaf7;
+  --panel: #ffffff;
+  --ink: #1c1b19;
+  --muted: #6c6862;
+  --line: #e4e0d8;
+  --accent: #2f6f4f;
+  --hl: #ffe9a8;
+  --hl-line: #f3f1ea;
+  color-scheme: light;
+}
+body[data-theme="dark"] {
+  --bg: #16171a;
+  --panel: #1e2024;
+  --ink: #e8e6e1;
+  --muted: #9a968f;
+  --line: #2e3138;
+  --accent: #7fc9a3;
+  --hl: #4a4526;
+  --hl-line: #23262b;
+  color-scheme: dark;
+}
+body[data-theme="paper"] {
+  --bg: #f2e8d5;
+  --panel: #f7efdd;
+  --ink: #3b2f1e;
+  --muted: #8a7a5c;
+  --line: #e0d3b0;
+  --accent: #7a5230;
+  --hl: #e8c97a;
+  --hl-line: #ece0c4;
+  color-scheme: light;
+}
+
+[hidden] { display: none !important; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font: inherit; padding: 7px 14px; border-radius: 7px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+}
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+a.primary {
+  font: inherit; padding: 7px 14px; border-radius: 7px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  text-decoration: none; display: inline-flex; align-items: center;
+}
+button.ghost:hover:not(:disabled) { background: var(--hl-line); }
+.grow { flex: 1; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* ------------------------------------------------------------- topbar */
+.topbar {
+  display: flex; align-items: center; gap: 18px;
+  padding: 10px 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+.brand { font-weight: 650; letter-spacing: .2px; }
+.views { display: flex; gap: 4px; background: var(--hl-line); padding: 3px; border-radius: 9px; }
+.viewBtn { border: none; background: transparent; padding: 6px 14px; border-radius: 7px; font-size: 14px; color: var(--muted); }
+.viewBtn:hover { color: var(--ink); }
+.viewBtn.active { background: var(--panel); color: var(--ink); font-weight: 600;
+                   box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+/* -------------------------------------------------------------- views */
+.views-wrap { flex: 1 1 auto; min-height: 0; display: flex; }
+/* overflow-x: hidden is deliberate, not decorative - overflow-y: auto alone
+   computes overflow-x to auto too (CSS spec), so any child that overflows
+   horizontally (even briefly, e.g. a mispositioned absolute element) pops a
+   scrollbar that shifts this centered column sideways. Belt-and-suspenders
+   against that whole class of bug - a reading pane never needs to scroll
+   sideways anyway. */
+.view { flex: 1 1 auto; min-height: 0; display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+body[data-view="library"] #view-library,
+body[data-view="reader"] #view-reader,
+body[data-view="voices"] #view-voices { display: flex; }
+
+/* -------------------------------------------------------------- library */
+#view-library { padding: 26px 26px 40px; gap: 24px; }
+.lib-shelf h2, #view-voices h2 { margin: 0 0 14px; font-size: 16px; color: var(--muted); font-weight: 650; }
+.shelf-cards { display: flex; gap: 14px; flex-wrap: wrap; }
+.lib-card {
+  width: 220px; padding: 16px; border-radius: 12px; background: var(--panel);
+  border: 1px solid var(--line); cursor: pointer; display: flex; flex-direction: column; gap: 8px;
+}
+.lib-card:hover { border-color: var(--accent); }
+.lib-card .card-title { font-weight: 650; font-size: 14px; overflow: hidden; text-overflow: ellipsis;
+                          white-space: nowrap; }
+.lib-card .card-meta { font-size: 12px; color: var(--muted); }
+.card-bar { height: 5px; border-radius: 3px; background: var(--hl-line); overflow: hidden; }
+.card-bar > span { display: block; height: 100%; background: var(--accent); }
+
+.lib-toolbar { display: flex; }
+#libSearch {
+  width: 100%; max-width: 420px; font: 14px/1.4 inherit; padding: 9px 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink);
+}
+
+.lib-full { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.lib-row {
+  display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; cursor: pointer;
+}
+.lib-row:hover { background: var(--hl-line); }
+.lib-row .row-title { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+                        white-space: nowrap; font-size: 14px; max-width: 32vw; }
+.lib-row .row-title:hover { text-decoration: underline; text-decoration-style: dotted; }
+.lib-row .row-bar { flex: 1 1 auto; height: 4px; border-radius: 3px; background: var(--hl-line); overflow: hidden; }
+.lib-row .row-bar > span { display: block; height: 100%; background: var(--accent); }
+.lib-row .row-pos { flex: 0 0 auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lib-row .row-pct { flex: 0 0 auto; width: 38px; text-align: right; font-size: 12px; color: var(--ink);
+                     font-weight: 600; font-variant-numeric: tabular-nums; }
+.lib-row .row-warm { flex: 0 0 auto; min-width: 65px; text-align: right; font-size: 11px; color: var(--muted);
+                      opacity: 0.85; font-variant-numeric: tabular-nums; }
+.lib-row .row-actions { flex: 0 0 auto; display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+.lib-row .row-actions button { padding: 3px 8px; font-size: 12px; }
+/* Faded until the row is pointed at - but opacity alone still leaves these
+   clickable, so anything a reader could reach without a mouse has to bring
+   itself back: keyboard focus, and a finished export's download button,
+   which is the one action here that is worth seeing before you go looking. */
+.lib-row:hover .row-actions { opacity: 1; }
+.lib-row .row-actions:focus-within { opacity: 1; }
+.lib-row .row-actions:has(.btn-green-download) { opacity: 1; }
+.btn-green-download {
+  padding: 3px 8px; font-size: 12px; font-weight: 600; border-radius: 6px;
+  border: 1px solid #16a34a; background: #16a34a; color: #fff;
+  text-decoration: none; display: inline-flex; align-items: center; cursor: pointer;
+}
+.btn-green-download:hover { background: #15803d; border-color: #15803d; }
+.lib-card .btn-green-download { align-self: flex-start; margin-top: 4px; }
+.lib-rename {
+  flex: 0 1 auto; min-width: 120px; font: inherit; font-size: 14px; padding: 2px 5px;
+  border: 1px solid var(--accent); border-radius: 5px; background: var(--panel); color: var(--ink);
+}
+.lib-row.hidden-by-search { display: none; }
+
+/* --------------------------------------------------------------- reader */
+#view-reader { position: relative; }
+.reader-toolbar {
+  display: flex; align-items: center; gap: 10px; padding: 10px 18px;
+  background: var(--panel); border-bottom: 1px solid var(--line); flex: 0 0 auto;
+}
+.title { color: var(--muted); font-size: 14px; overflow: hidden;
+         text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
+.reader-split-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.reader-split-wrap.is-split .pdf-pane {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  min-width: 320px;
+}
+
+.reader-split-wrap.is-split .reader {
+  width: 50%;
+  max-width: none;
+  padding: 32px 28px 45vh;
+}
+
+.pdf-pane { display: none; }
+
+.pdf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.pdf-toolbar button {
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.pdf-viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="dark"] .pdf-viewport {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.pdf-page-img {
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #ffffff;
+  transition: opacity 0.15s ease;
+  display: block;
+}
+.pdf-page-img:not([src]), .pdf-page-img[src=""] {
+  display: none;
+}
+
+@media (max-width: 850px) {
+  .reader-split-wrap.is-split {
+    flex-direction: column;
+  }
+  .reader-split-wrap.is-split .pdf-pane {
+    width: 100%;
+    height: 45vh;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .reader-split-wrap.is-split .reader {
+    width: 100%;
+  }
+  /* Too narrow for a third column - the panel becomes the bottom half
+     instead, still beside the text rather than over it. */
+  .reader-split-wrap.is-explaining {
+    flex-direction: column;
+  }
+  .reader-split-wrap.is-explaining .explain-panel {
+    flex: 0 0 50%; max-width: none; width: 100%;
+    border-left: none; border-top: 1px solid var(--line);
+  }
+}
+
+.reader { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; padding: 42px 24px 45vh; position: relative; }
+.reader > * {
+  max-width: 34em; margin: 0 auto 1.15em;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: 19px; line-height: 1.72;
+}
+.empty { color: var(--muted); font-style: italic; }
+
+.blk { padding: 6px 10px; border-radius: 8px; transition: background .25s; }
+.blk.here { background: var(--hl-line); }
+
+.blk.practice-heading { margin-top: 28px; }
+.blk.practice-heading::before {
+  content: "Practice problems"; display: block; font-family: system-ui, sans-serif;
+  font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 6px;
+}
+.blk.practice-item { border-left: 3px solid var(--accent); padding-left: 12px; }
+
+/* Attempt-it card under a problem the book printed. Sans-serif on purpose -
+   it is app furniture sitting in the middle of the book's own text, and
+   should read as clearly not part of it. */
+.practice-card {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px;
+  margin: -4px auto 1.15em; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--hl-line);
+}
+.practice-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.practice-input {
+  flex: 1 1 160px; min-width: 0; font: 13px/1.4 system-ui, sans-serif;
+  padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--panel); color: var(--ink);
+}
+.practice-card button { font-size: 12px; padding: 5px 10px; }
+.practice-verdict { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
+.practice-verdict.is-right { color: var(--accent); font-weight: 600; }
+.practice-answer { margin: 8px 0 0; font-size: 13px; }
+.practice-answer strong { color: var(--accent); }
+/* Said out loud rather than implied by an empty box: the book gives no
+   answer for this one, and the reader should not be left wondering whether
+   the app lost it (see practice.py). */
+.practice-banner { margin: 0; color: var(--muted); font-style: italic; }
+
+.w { border-radius: 4px; padding: 1px 0; cursor: pointer; }
+.w:hover { text-decoration: underline; text-decoration-color: var(--muted); }
+.w.on { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); }
+.w.done { color: var(--muted); }
+.w.hit { box-shadow: 0 0 0 2px var(--accent); border-radius: 3px; }
+
+/* fixed, not absolute - these track a block/selection's live viewport
+   position directly (see positionHoverBtn() in app.js), not a position
+   relative to some container's scrolled content. */
+.explain-hover-btn {
+  position: fixed; z-index: 6; font-size: 12px; padding: 4px 10px;
+  background: var(--panel); box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.explain-selection-toolbar { position: fixed; z-index: 9; padding: 3px; }
+.explain-selection-toolbar .pop-item { white-space: nowrap; }
+
+/* A column in the split wrap, not a drawer over the text: the reader is
+   usually looking back and forth between the passage and the answer, so the
+   passage must not be the thing underneath. */
+.explain-panel {
+  flex: 0 0 360px; min-width: 260px; max-width: 46vw;
+  background: var(--panel); border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+/* Three panes only fit if the other two stop insisting on half the width
+   each (see .is-split above); is-explaining is set by app.js. */
+.reader-split-wrap.is-split.is-explaining .pdf-pane,
+.reader-split-wrap.is-split.is-explaining .reader {
+  width: auto; flex: 1 1 0; min-width: 240px;
+}
+.explain-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+                 border-bottom: 1px solid var(--line); font-size: 14px; }
+/* Which model is answering, and - the part that matters - whether the
+   passage left this machine to get there. */
+.ai-badge {
+  font-size: 11px; font-weight: 600; letter-spacing: .02em; padding: 2px 8px;
+  border-radius: 999px; background: var(--hl-line); color: var(--muted);
+  border: 1px solid var(--line); white-space: nowrap;
+}
+.ai-badge.is-cloud { color: var(--accent); border-color: var(--accent); }
+.explain-passage {
+  margin: 12px 14px; padding: 8px 12px; border-left: 3px solid var(--accent);
+  font-size: 13px; color: var(--muted); max-height: 120px; overflow-y: auto;
+}
+.explain-body { flex: 1 1 auto; overflow-y: auto; padding: 0 14px; font-size: 14px; line-height: 1.55; }
+.explain-ask { display: flex; gap: 6px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.explain-ask input {
+  flex: 1; font: 13px/1.4 inherit; padding: 7px 9px; border: 1px solid var(--line);
+  border-radius: 7px; background: var(--bg); color: var(--ink);
+}
+
+.night-overlay {
+  position: absolute; inset: 0; background: #ffdd66; opacity: .16;
+  mix-blend-mode: multiply; pointer-events: none; display: none;
+}
+body[data-night="on"] .night-overlay { display: block; }
+
+/* floating in-document search */
+.reader-search {
+  position: absolute; top: 58px; right: 24px; z-index: 8;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 9px;
+  padding: 7px 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18);
+}
+.reader-search input {
+  font: 14px/1.4 inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--bg); color: var(--ink); width: 220px;
+}
+.reader-search button { padding: 4px 9px; }
+
+/* popovers used by sleep/theme/voice/speed */
+.sleep-wrap, .theme-wrap, .voice-wrap, .speed-wrap, .chapters-wrap { position: relative; }
+.pop {
+  position: absolute; z-index: 20; min-width: 168px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 5px; display: flex; flex-direction: column; gap: 2px;
+}
+.sleep-wrap .pop, .theme-wrap .pop { top: calc(100% + 8px); right: 0; }
+.chapters-wrap .pop { top: calc(100% + 8px); left: 0; max-height: 320px; overflow-y: auto; }
+.voice-wrap .pop, .speed-wrap .pop { bottom: calc(100% + 8px); left: 0; max-height: 260px; overflow-y: auto; }
+.pop-item {
+  border: none; background: transparent; text-align: left; padding: 8px 10px; border-radius: 6px; font-size: 13px;
+}
+.pop-item:hover { background: var(--hl-line); }
+.pop-item.active { font-weight: 650; color: var(--accent); }
+
+/* --------------------------------------------------------------- voices */
+#view-voices { padding: 26px 26px 40px; }
+.voice-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0 16px;
+}
+#voiceSearch {
+  padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink); font-size: 13px; min-width: 200px;
+}
+.voice-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 5px 12px; border-radius: 999px; font-size: 12px;
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+}
+.chip.active { border-color: var(--accent); color: var(--accent); font-weight: 650; }
+
+/* auto-fill rather than a fixed count: five kokoro voices on a laptop and ten
+   on a wide monitor should both fill the row without a media query. */
+.voice-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.voice-card {
+  padding: 14px; border-radius: 12px; background: var(--panel);
+  border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px;
+}
+.voice-card[hidden] { display: none; }
+.voice-card .v-label { font-weight: 650; font-size: 15px; }
+.voice-card .v-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.voice-card .v-badge {
+  font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+}
+.voice-card .v-badge-engine { opacity: .75; }
+/* Keeps the row's height whether or not a card carries a badge, so cards do
+   not jump as the active/default voice moves between them. */
+.voice-card .v-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 15px; }
+.voice-card .v-tag { font-size: 11px; color: var(--accent); font-weight: 650; }
+.voice-card .v-tag-active { color: var(--ink); }
+.voice-card .v-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.voice-card .v-actions button { flex: 1 1 auto; padding: 6px 8px; font-size: 12px; }
+.voice-card .v-actions button[disabled] { opacity: .5; }
+.voice-card.is-default { border-color: var(--accent); }
+.voice-card.is-active { box-shadow: inset 0 0 0 2px var(--accent); }
+.voice-card.is-previewing .v-play { color: var(--accent); font-weight: 650; }
+
+/* ---------------------------------------------------------------- player */
+.player {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 18px; min-height: 64px;
+  background: var(--panel); border-top: 1px solid var(--line); flex: 0 0 auto;
+}
+.player-info { min-width: 0; flex: 0 1 240px; }
+.player-title { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player-sub { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.player-controls { display: flex; align-items: center; gap: 8px; }
+.player-extra { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+#voiceBtn, #speedBtn { font-size: 13px; min-width: 64px; }
+
+/* ---------------------------------------------------------------- dialog */
+dialog { border: 1px solid var(--line); border-radius: 12px; padding: 0;
+         background: var(--panel); color: var(--ink); max-width: 560px; width: 92vw; }
+dialog::backdrop { background: rgba(0,0,0,.42); }
+.dlg { padding: 22px 24px 18px; }
+.dlg h2 { margin: 0 0 16px; font-size: 18px; }
+.dlg label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.dlg input[type=text], .dlg textarea {
+  width: 100%; font: 14px/1.45 ui-monospace, Consolas, monospace;
+  padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--bg); color: var(--ink); resize: vertical;
+}
+#pasteTitle { margin-bottom: 8px; }
+.or { display: flex; align-items: center; gap: 10px; color: var(--muted);
+      font-size: 12px; margin: 18px 0; }
+.or::before, .or::after { content: ""; height: 1px; background: var(--line); flex: 1; }
+.export-voice-wrap { margin: 14px 0 0; }
+.export-voice-wrap label { display: block; font-size: 13px; color: var(--muted);
+                           margin-bottom: 6px; }
+#exportVoiceSelect {
+  width: 100%; font: 14px/1.45 inherit; font-family: inherit;
+  padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--bg); color: var(--ink);
+}
+.export-voice-wrap .hint { margin: 6px 0 0; }
+.export-mode { display: flex; flex-direction: column; gap: 6px; margin: 14px 0; font-size: 13px; }
+.export-mode label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+/* Voice + mode, once the job has started and they can no longer be changed.
+   Replaces the picker rather than disabling it - a greyed-out dropdown still
+   reads as something you might be able to use. */
+.export-active-voice { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+.export-active-voice strong { color: var(--ink); font-weight: 650; }
+
+/* An export running behind the reader. Subtle on purpose: it is a background
+   job, not something demanding attention. */
+.exporting { color: var(--accent); border-color: var(--accent);
+             animation: export-pulse 1.6s ease-in-out infinite; }
+@keyframes export-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .exporting { animation: none; } }
+.lib-card .card-exporting { align-self: flex-start; padding: 2px 8px; font-size: 11px; }
+.lib-row .row-actions button.exporting { opacity: 1; }
+/* Row actions only appear on hover; an export in flight has to stay visible. */
+.lib-row:has(.exporting) .row-actions { opacity: 1; }
+
+.export-files { list-style: none; margin: 10px 0 0; padding: 0; max-height: 220px;
+                overflow-y: auto; font-size: 13px; }
+.export-files li { display: flex; align-items: center; justify-content: space-between;
+                   gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.export-files li:last-child { border-bottom: none; }
+.export-files .chap-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.err { color: #c0392b; font-size: 13px; margin: 12px 0 0; white-space: pre-wrap; }
+body[data-theme="dark"] .err { color: #ff8a7a; }
+menu { display: flex; justify-content: flex-end; gap: 10px;
+       margin: 20px 0 0; padding: 0; }
+
+/* ---------------------------------------------------------------- figures */
+/* The figure preview dock. Fixed above the player bar and out of the text's
+   way entirely: it is `position: fixed`, so revealing it shifts no line of the
+   paragraph being read, and it never takes focus. It does not exist in the DOM
+   at all until a figure reference is actually reached (see ensureFigureDock in
+   app.js), so a document with no figures has nothing to hide. */
+.figure-dock {
+  position: fixed; right: 18px; bottom: 84px; z-index: 8;
+  width: min(320px, 42vw); max-height: 46vh;
+  display: none; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+.figure-dock.is-open { display: flex; animation: figure-dock-in 160ms ease-out; }
+@keyframes figure-dock-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .figure-dock.is-open { animation: none; }
+}
+.figure-dock-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--line);
+}
+.figure-dock-label { font-size: 12px; font-weight: 650; color: var(--muted); }
+.figure-dock-close { margin-left: auto; font-size: 16px; line-height: 1; padding: 2px 8px; }
+.figure-dock-img {
+  display: block; width: 100%; max-height: 30vh;
+  object-fit: contain; background: var(--bg); cursor: zoom-in;
+}
+.figure-dock-caption {
+  font-size: 12px; color: var(--muted); line-height: 1.35;
+  padding: 8px 12px 10px; max-height: 8.5em; overflow: auto;
+}
+
+/* Scanning progress, on its own line under the player status.
+
+   Deliberately quiet: a book being read off a scanner is still a book you can
+   listen to, and this is provenance, not an alert. It disappears entirely
+   when the scan finishes, and on a scan that ended short it stays as a plain
+   count rather than becoming an error. */
+.ingest-note {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--muted, #8a8a8a);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ingest-note::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+  animation: ingest-pulse 1.6s ease-in-out infinite;
+}
+.ingest-note.ingest-settled::before { animation: none; opacity: 0.3; }
+@keyframes ingest-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ingest-note::before { animation: none; opacity: 0.5; }
+}
+
+/* Bimodal Focus Mode: gently dims inactive text blocks so the eye stays with the spoken word */
+body.focus-mode .blk:not(.here) {
+  opacity: 0.38;
+  filter: blur(0.2px);
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+body.focus-mode .blk.here {
+  opacity: 1;
+  filter: none;
+}
+button#focusBtn.active {
+  background: var(--line);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Responsive mobile ergonomics & container query */
+.reader-split-wrap {
+  container-type: inline-size;
+}
+@media (max-width: 600px) {
+  .player-controls button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

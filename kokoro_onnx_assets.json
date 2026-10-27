@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "Assets for the optional ONNX Kokoro backend (TALKIFY_KOKORO_BACKEND=onnx).",
+    "Status: Verified model and voices hashes recorded. ONNX backend is available",
+    "via TALKIFY_KOKORO_BACKEND=onnx.",
+    "Verified against official releases: https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0",
+    "To re-record: python kokoro_assets.py record <file>"
+  ],
+  "release": "https://github.com/thewh1teagle/kokoro-onnx/releases",
+  "assets": {
+    "model": {
+      "file": "kokoro-v1.0.onnx",
+      "url": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
+      "bytes": 325532387,
+      "sha256": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+      "env": "TALKIFY_KOKORO_ONNX_MODEL",
+      "precision": "f32"
+    },
+    "voices": {
+      "file": "voices-v1.0.bin",
+      "url": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
+      "bytes": 28214398,
+      "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
+      "env": "TALKIFY_KOKORO_ONNX_VOICES"
+    }
+  }
+}

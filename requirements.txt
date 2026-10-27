@@ -1,0 +1,15 @@
+# core reader
+pymupdf            # PDF text + geometry
+lameenc            # pure-wheel MP3 encoder for export - no ffmpeg binary needed
+
+# offline speech (default engine): NOT installed here. Kokoro's English
+# phonetics need spaCy, which has no wheels for this project's Python version
+# yet, so it runs in its own Python 3.12 venv instead - see setup_kokoro.ps1
+# and the Setup section of README.md.
+
+# optional
+edge-tts           # network engine; emits word boundaries directly
+ebooklib           # EPUB
+beautifulsoup4     # EPUB
+pytesseract        # scanned PDFs (also needs the Tesseract binary)
+pillow

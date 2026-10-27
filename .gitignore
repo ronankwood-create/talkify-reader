@@ -1,0 +1,64 @@
+# local config, including any API key the user adds - never commit this
+config.json
+.env
+.env.*
+!.env.example
+
+# the user's own documents - never commit this
+library/
+
+# exported MP3s + timing JSON
+exports/
+
+# test books and personal files: PDFs, EPUBs, scans, photos (some copyrighted)
+samples/
+*.pdf
+*.epub
+*.mobi
+*.djvu
+/*.jpg
+/*.jpeg
+/*.png
+/*.heic
+
+# generated
+.ocr-cache/
+.parts/
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.txt
+*.log
+!requirements.txt
+
+# model weights and voices (downloaded on first run, never committed)
+kokoro_assets/
+*.onnx
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.gguf
+.ollama/
+
+# environments, build output, dependencies
+__pycache__/
+*.pyc
+.venv/
+venv/
+kokoro_venv/
+node_modules/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# OS and editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+.claude/
